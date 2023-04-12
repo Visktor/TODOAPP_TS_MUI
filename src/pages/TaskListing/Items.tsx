@@ -1,5 +1,5 @@
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
-import { useReducer } from "react";
+import { Dispatch, useReducer } from "react";
 import { inputState, Itask, TasksStyles } from "../tasks/Tasks";
 
 interface ItaskState {
@@ -8,32 +8,27 @@ interface ItaskState {
   isTaskEditable: boolean;
 }
 
-interface ItaskEditable {
-  type: "taskEditable";
-  editable: boolean;
+interface Iaction {
+  type: "taskEditable" | "changeTaskValues";
+  payload: string | boolean;
+  error?: boolean;
 }
 
-interface IchangeValues {
-  type: "changeTaskValues";
-  payload: string;
-  error: boolean;
-}
-
-type ItaskAction = IchangeValues | ItaskEditable;
-
-function funcTaskReducer(state: ItaskState, action: ItaskAction) {
-  // FIX: rewind typing to single instead of UNION
+function funcTaskReducer(state: ItaskState, action: Iaction): ItaskState {
   const cases: {
-    [key: string]: (state: ItaskState, action: ItaskAction) => ItaskState;
+    [key: string]: (state: ItaskState, action: Iaction) => ItaskState;
   } = {
     setEditable: (state, action) => {
       return {
         ...state,
-        isTaskEditable: action.editable ?? false,
+        isTaskEditable:
+          typeof action.payload === "boolean" ? action.payload : false,
       };
     },
   };
-  return state;
+  return cases[action.type]
+    ? cases[action.type](state, action)
+    : cases.default(state, action);
 }
 
 const initialValues: ItaskState = {
@@ -48,7 +43,10 @@ const TaskItem = ({
   task: Itask;
   saveAlteredTaskFunc: () => void;
 }) => {
-  const [taskState, dispatchTask] = useReducer(funcTaskReducer, initialValues);
+  const [taskState, dispatchTask]: [ItaskState, Dispatch<Iaction>] = useReducer(
+    funcTaskReducer,
+    initialValues
+  );
 
   return (
     <Grid item container spacing={2}>
@@ -73,11 +71,10 @@ const TaskItem = ({
         </Paper>
       </Grid>
       <Grid item>
+        {/* Edit and Delete */}
         <IconButton
           onClick={() => {
-            // FIX: typing of dispatch action is iffy.
-            // Can't have multiple types coexisting within action object
-            dispatchTask({ type: "taskEditable", payload: task.id });
+            dispatchTask({ type: "taskEditable", payload: true });
           }}
         ></IconButton>
       </Grid>
