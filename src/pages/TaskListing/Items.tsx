@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
 import { Dispatch, useReducer } from "react";
 import { inputState, Itask, TasksStyles } from "../tasks/Tasks";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 interface ItaskState {
   [key: string]: object | null | boolean;
@@ -9,8 +11,8 @@ interface ItaskState {
 }
 
 interface Iaction {
-  type: "taskEditable" | "changeTaskValues";
-  payload: string | boolean;
+  type: "setEditable" | "changeTaskValues";
+  payload?: string | boolean;
   error?: boolean;
 }
 
@@ -21,8 +23,7 @@ function funcTaskReducer(state: ItaskState, action: Iaction): ItaskState {
     setEditable: (state, action) => {
       return {
         ...state,
-        isTaskEditable:
-          typeof action.payload === "boolean" ? action.payload : false,
+        isTaskEditable: !state.isTaskEditable,
       };
     },
   };
@@ -36,12 +37,12 @@ const initialValues: ItaskState = {
   isTaskEditable: false,
 };
 
-const TaskItem = ({
+export const TaskItem = ({
   task,
   saveAlteredTaskFunc,
 }: {
   task: Itask;
-  saveAlteredTaskFunc: () => void;
+  saveAlteredTaskFunc: (task: Itask) => void;
 }) => {
   const [taskState, dispatchTask]: [ItaskState, Dispatch<Iaction>] = useReducer(
     funcTaskReducer,
@@ -74,9 +75,11 @@ const TaskItem = ({
         {/* Edit and Delete */}
         <IconButton
           onClick={() => {
-            dispatchTask({ type: "taskEditable", payload: true });
+            dispatchTask({ type: "setEditable" });
           }}
-        ></IconButton>
+        >
+          <FontAwesomeIcon icon={faPencil} />
+        </IconButton>
       </Grid>
       <Grid item>
         <IconButton></IconButton>
