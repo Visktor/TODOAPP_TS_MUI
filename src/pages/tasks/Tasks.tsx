@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
-import { ChangeEvent, useReducer } from "react";
+import { ChangeEvent, Dispatch, useReducer } from "react";
 import alphabeticStrValidation from "./../../utils/validateAlphabeticStr";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
-import { TaskContainer } from "../TaskListing/Container";
+import { TaskItem } from "../TaskListing/Items";
 
 export const TasksStyles: { [key: string]: object } = {
   paper: {
@@ -39,9 +39,15 @@ interface ItasksState {
 }
 
 interface ItasksAction {
-  type: string;
+  type:
+  | "changeTaskDescription"
+  | "changeTasktitle"
+  | "addTask"
+  | "deleteTask"
+  | "editTask";
   payload: string | Itask;
   error?: boolean;
+  taskIndex?: number;
 }
 
 const initialValue: ItasksState = {
@@ -76,7 +82,6 @@ function funcReducer(state: ItasksState, action: ItasksAction): ItasksState {
         arrayCopy.push(action.payload);
         return { ...initialValue, tasksArray: arrayCopy };
       }
-
       return state;
     },
     deleteTask: (state, action) => {
@@ -85,6 +90,16 @@ function funcReducer(state: ItasksState, action: ItasksAction): ItasksState {
       );
 
       return { ...state, tasksArray: arrayCopy };
+    },
+    editTask: (state, action) => {
+      const arrayCopy = [...state.tasksArray];
+      if (action.taskIndex && typeof action.payload === "object") {
+        arrayCopy[action.taskIndex] = action.payload;
+      }
+      return {
+        ...state,
+        tasksArray: arrayCopy,
+      };
     },
     default: (state) => state,
   };
@@ -95,10 +110,8 @@ function funcReducer(state: ItasksState, action: ItasksAction): ItasksState {
 }
 
 export const Tasks = () => {
-  const [tasksState, dispatchTasks]: [ItasksState, Function] = useReducer(
-    funcReducer,
-    initialValue
-  );
+  const [tasksState, dispatchTasks]: [ItasksState, Dispatch<ItasksAction>] =
+    useReducer(funcReducer, initialValue);
 
   function handleAddButtonClick() {
     if (
@@ -179,7 +192,22 @@ export const Tasks = () => {
         </Grid>
       </Grid>
       <Grid item container xs={12} mt={2}>
-        <TaskContainer tasks={tasksState.tasksArray}></TaskContainer>
+        <Grid container item spacing={1}>
+          {tasksState.tasksArray.map((task, index) => {
+            return (
+              <TaskItem
+                task={task}
+                saveAlteredTaskFunc={(task: Itask) => {
+                  dispatchTasks({
+                    type: "editTask",
+                    payload: task,
+                    taskIndex: index,
+                  });
+                }}
+              />
+            );
+          })}
+        </Grid>
       </Grid>
     </Grid>
   );
