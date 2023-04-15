@@ -40,11 +40,11 @@ interface ItasksState {
 
 interface ItasksAction {
   type:
-  | "changeTaskDescription"
-  | "changeTasktitle"
-  | "addTask"
-  | "deleteTask"
-  | "editTask";
+    | "changeTaskDescription"
+    | "changeTasktitle"
+    | "addTask"
+    | "deleteTask"
+    | "editTask";
   payload: string | Itask;
   error?: boolean;
   taskIndex?: number;
@@ -137,14 +137,9 @@ export const Tasks = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     type: "changeTaskDescription" | "changeTasktitle"
   ) {
-    const error =
-      !e.currentTarget.value ||
-      !alphabeticStrValidation(e.currentTarget.value, "all");
-    console.log("error:", error);
     dispatchTasks({
       type: type,
       payload: e.currentTarget.value,
-      error: error,
     });
   }
 
