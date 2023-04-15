@@ -1,7 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
 import { ChangeEvent, Dispatch, useReducer } from "react";
-import alphabeticStrValidation from "./../../utils/validateAlphabeticStr";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 import { TaskItem } from "../TaskListing/Items";
@@ -85,11 +84,11 @@ function funcReducer(state: ItasksState, action: ItasksAction): ItasksState {
       return state;
     },
     deleteTask: (state, action) => {
-      const arrayCopy = [...state.tasksArray].filter(
+      const filteredArray = [...state.tasksArray].filter(
         (task) => task.id !== action.payload
       );
 
-      return { ...state, tasksArray: arrayCopy };
+      return { ...state, tasksArray: filteredArray };
     },
     editTask: (state, action) => {
       const arrayCopy = [...state.tasksArray];
