@@ -1,4 +1,4 @@
-  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
 import { ChangeEvent, Dispatch, useReducer } from "react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -44,7 +44,7 @@ interface ItasksAction {
     | "addTask"
     | "deleteTask"
     | "editTask";
-  payload: string | Itask;
+  payload: string | Itask | number;
   error?: boolean;
   taskIndex?: number;
 }
@@ -190,6 +190,9 @@ export const Tasks = () => {
           {tasksState.tasksArray.map((task, index) => {
             return (
               <TaskItem
+                deleteTask={(id: number) => {
+                  dispatchTasks({ type: "deleteTask", payload: id });
+                }}
                 task={task}
                 saveAlteredTaskFunc={(task: Itask) => {
                   dispatchTasks({

@@ -44,9 +44,11 @@ const initialValues: ItaskState = {
 export const TaskItem = ({
   task,
   saveAlteredTaskFunc,
+  deleteTask,
 }: {
   task: Itask;
-  saveAlteredTaskFunc: (task: Itask) => void;
+  saveAlteredTaskFunc: Function;
+  deleteTask: Function;
 }) => {
   const [taskState, dispatchTask]: [ItaskState, Dispatch<Iaction>] = useReducer(
     funcTaskReducer,
