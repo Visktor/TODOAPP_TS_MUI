@@ -2,7 +2,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
 import { Dispatch, useReducer } from "react";
 import { inputState, Itask, TasksStyles } from "../tasks/Tasks";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPencil,
+  faTrash,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface ItaskState {
   [key: string]: object | null | boolean;
@@ -60,29 +64,49 @@ export const TaskItem = ({
             {task.title}
           </Paper>
         ) : (
-          <TextField value={taskState.taskValues?.taskTitle} />
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            value={taskState.taskValues?.taskTitle}
+          />
         )}
       </Grid>
-      <Grid item xs={8}>
-        <Paper
-          elevation={3}
-          style={{ ...TasksStyles.paper, padding: "8px 0", width: "100%" }}
-        >
-          {task.description}
-        </Paper>
+      <Grid item xs={true}>
+        {taskState.isTaskEditable ? (
+          <Paper
+            elevation={3}
+            style={{ ...TasksStyles.paper, padding: "8px 0", width: "100%" }}
+          >
+            {task.description}
+          </Paper>
+        ) : (
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            value={taskState.taskValues?.taskTitle}
+          />
+        )}
       </Grid>
-      <Grid item>
-        {/* Edit and Delete */}
-        <IconButton
-          onClick={() => {
-            dispatchTask({ type: "setEditable" });
-          }}
-        >
-          <FontAwesomeIcon icon={faPencil} />
-        </IconButton>
-      </Grid>
-      <Grid item>
-        <IconButton></IconButton>
+      <Grid container item xs={"auto"}>
+        <Grid item>
+          {/* Edit and Delete */}
+          <IconButton
+            onClick={() => {
+              dispatchTask({ type: "setEditable" });
+            }}
+          >
+            <FontAwesomeIcon
+              icon={taskState.isTaskEditable ? faPencil : faCheckCircle}
+            />
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <IconButton>
+            <FontAwesomeIcon icon={faTrash} />
+          </IconButton>
+        </Grid>
       </Grid>
     </Grid>
   );
