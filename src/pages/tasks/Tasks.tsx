@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Grid, IconButton, Paper, TextField } from "@mui/material";
 import { ChangeEvent, Dispatch, useReducer } from "react";
-import alphabeticStrValidation from "./../../utils/validateAlphabeticStr";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 import { TaskItem } from "../TaskListing/Items";
@@ -45,7 +44,7 @@ interface ItasksAction {
   | "addTask"
   | "deleteTask"
   | "editTask";
-  payload: string | Itask;
+  payload: string | Itask | number;
   error?: boolean;
   taskIndex?: number;
 }
@@ -85,11 +84,11 @@ function funcReducer(state: ItasksState, action: ItasksAction): ItasksState {
       return state;
     },
     deleteTask: (state, action) => {
-      const arrayCopy = [...state.tasksArray].filter(
+      const filteredArray = [...state.tasksArray].filter(
         (task) => task.id !== action.payload
       );
 
-      return { ...state, tasksArray: arrayCopy };
+      return { ...state, tasksArray: filteredArray };
     },
     editTask: (state, action) => {
       const arrayCopy = [...state.tasksArray];
@@ -114,6 +113,7 @@ export const Tasks = () => {
     useReducer(funcReducer, initialValue);
 
   function handleAddButtonClick() {
+    console.log(tasksState);
     if (
       !tasksState.taskDescription.value ||
       tasksState.taskDescription.error ||
@@ -137,14 +137,9 @@ export const Tasks = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     type: "changeTaskDescription" | "changeTasktitle"
   ) {
-    const error =
-      !e.currentTarget.value ||
-      !alphabeticStrValidation(e.currentTarget.value, "all");
-    console.log("error:", error);
     dispatchTasks({
       type: type,
       payload: e.currentTarget.value,
-      error: error,
     });
   }
 
@@ -196,6 +191,10 @@ export const Tasks = () => {
           {tasksState.tasksArray.map((task, index) => {
             return (
               <TaskItem
+                key={index + 1}
+                deleteTask={(id: number) => {
+                  dispatchTasks({ type: "deleteTask", payload: id });
+                }}
                 task={task}
                 saveAlteredTaskFunc={(task: Itask) => {
                   dispatchTasks({
