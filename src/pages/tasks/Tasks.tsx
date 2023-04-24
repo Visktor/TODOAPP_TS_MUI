@@ -39,11 +39,11 @@ interface ItasksState {
 
 interface ItasksAction {
   type:
-    | "changeTaskDescription"
-    | "changeTasktitle"
-    | "addTask"
-    | "deleteTask"
-    | "editTask";
+  | "changeTaskDescription"
+  | "changeTasktitle"
+  | "addTask"
+  | "deleteTask"
+  | "editTask";
   payload: string | Itask | number;
   error?: boolean;
   taskIndex?: number;
@@ -113,6 +113,7 @@ export const Tasks = () => {
     useReducer(funcReducer, initialValue);
 
   function handleAddButtonClick() {
+    console.log(tasksState);
     if (
       !tasksState.taskDescription.value ||
       tasksState.taskDescription.error ||
@@ -190,6 +191,7 @@ export const Tasks = () => {
           {tasksState.tasksArray.map((task, index) => {
             return (
               <TaskItem
+                key={index + 1}
                 deleteTask={(id: number) => {
                   dispatchTasks({ type: "deleteTask", payload: id });
                 }}
